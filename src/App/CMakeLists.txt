@@ -21,7 +21,11 @@ set_target_properties(${TARGET_NAME} PROPERTIES FOLDER ${PROJECT_NAME})
 
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
-target_link_libraries(${TARGET_NAME} ${PROJECT_NAME}Runtime)
+target_link_libraries(${TARGET_NAME} 
+${PROJECT_NAME}Runtime
+sol2::sol2
+lua
+)
 
 target_include_directories(
   ${TARGET_NAME} 
@@ -37,3 +41,7 @@ target_include_directories(
 # COMMAND ${CMAKE_COMMAND} -E remove_directory "${BINARY_ROOT_DIR}/${ENGINE_ASSET_DIR}"
 # COMMAND ${CMAKE_COMMAND} -E copy_directory "${ENGINE_ROOT_DIR}/${ENGINE_ASSET_DIR}" "${BINARY_ROOT_DIR}/${ENGINE_ASSET_DIR}"
 # )
+
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/a.lua" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}"
+)
