@@ -1,10 +1,10 @@
-# my_cpp_empty_project
+# sol2 begin
 
 ## how to use it
 ```bash
 # clone repository and submodule
 
-git clone --recursive https://github.com/StoneHappy/my_cpp_empty_project.git
+git clone --recursive https://github.com/StoneHappy/sol2-begin.git
 
 # create buid dir
 
