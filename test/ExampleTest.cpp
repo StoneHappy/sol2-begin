@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
-
-#include <Core/test.h>
-
-TEST(ExampleTest, SimpleFirstTest)
+#include <index.h>
+TEST(Sol2Tests, a_opening_a_state)
 {
-	EXPECT_TRUE(test());
+	EXPECT_EQ(a_opening_a_state::main(), EXIT_SUCCESS);
 }
