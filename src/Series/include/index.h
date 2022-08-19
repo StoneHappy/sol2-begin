@@ -1,6 +1,6 @@
 #pragma once
 
-namespace a_opening_a_state
+namespace a_hello_lua
 {
     int main();
 }
