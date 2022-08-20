@@ -9,3 +9,8 @@ namespace b_variables
 {
     int main();
 }
+
+namespace c_functions
+{
+    int main();
+}

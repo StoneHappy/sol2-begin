@@ -1,5 +1,3 @@
-#include <sol/forward.hpp>
-#include <sol/state.hpp>
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 namespace b_variables

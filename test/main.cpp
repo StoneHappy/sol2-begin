@@ -9,3 +9,8 @@ TEST(Sol2Tests, b_variables)
 {
 	EXPECT_EQ(b_variables::main(), EXIT_SUCCESS);
 }
+
+TEST(Sol2Tests, c_functions)
+{
+	EXPECT_EQ(c_functions::main(), EXIT_SUCCESS);
+}
