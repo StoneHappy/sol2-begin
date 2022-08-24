@@ -1,4 +1,8 @@
+#include <iostream>
+#include <sol/error.hpp>
+#include <sol/forward.hpp>
 #include <sol/overload.hpp>
+#include <sol/protected_function_result.hpp>
 #include <string>
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
@@ -32,6 +36,8 @@ namespace c_functions
          * 
          */
         sol::state lua;
+        lua.open_libraries(sol::lib::base);
+
         lua["my_func"] = my_function;
         // lua.set("my_func", my_function);
         // lua.set_function("my_func", my_function);
@@ -85,6 +91,47 @@ namespace c_functions
         std::string m3 = lua["m3"];
         if (m0 != m2 || m1 != m3) {
             return EXIT_FAILURE;
+        }
+
+        // Getting a function
+        lua.script(R"(
+            function f(a)
+                return a + 5
+            end
+        )");
+
+        int x = lua["f"](25);
+        sol::function f = lua["f"];
+        int y = f(25);
+        if (x != y)
+        {
+            return EXIT_FAILURE;
+        }
+
+        // protected function
+        lua.script(R"(
+            function handler(message)
+                return "Handled this message: " .. message
+            end
+
+            function pf(a)
+                if a < 0 then
+                    error("negative number detected")
+                end
+                return a + 5
+            end
+        )");
+        sol::protected_function pf = lua["pf"];
+        pf.set_error_handler(lua["handler"]);
+
+        sol::protected_function_result result = pf(-500);
+        if (result.valid()) {
+            std::cout << "result valid!" << std::endl;
+        }
+        else {
+            sol::error err = result;
+            std::string errwhat  = err.what();
+            std::cout << errwhat << std::endl;
         }
 
         return EXIT_SUCCESS;
