@@ -3,7 +3,9 @@
 #include <sol/forward.hpp>
 #include <sol/overload.hpp>
 #include <sol/protected_function_result.hpp>
+#include <sol/tie.hpp>
 #include <string>
+#include <tuple>
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 
@@ -49,7 +51,10 @@ namespace c_functions
             return EXIT_FAILURE;
         }
 
-        // register class function with instance
+        /**
+         * @brief register class function with instance 
+         * 
+         */
         lua.set_function("my_class_func", &my_class::func, my_class());
         lua.script(R"(
             a1 = my_class_func()
@@ -62,7 +67,10 @@ namespace c_functions
             return EXIT_FAILURE;
         }
 
-        // register class function without instance
+        /**
+         * @brief register class function without instance
+         * 
+         */
         lua.set_function("my_class_func2", &my_class::func);
         lua.set("obj", my_class(24));
         lua.script(R"(
@@ -73,7 +81,11 @@ namespace c_functions
             return EXIT_FAILURE;
         }
 
-        // register templated function
+        /**
+         * @brief register templated function 
+         * 
+         */
+
         lua.set_function("my_int_add", my_add<int, int>);
         lua.set_function("my_string_add", my_add<std::string, std::string>);
         lua["my_combine"] = sol::overload(my_add<int, int>, my_add<std::string, std::string>);
@@ -93,7 +105,11 @@ namespace c_functions
             return EXIT_FAILURE;
         }
 
-        // Getting a function
+        /**
+         * @brief Getting a function
+         * 
+         */
+
         lua.script(R"(
             function f(a)
                 return a + 5
@@ -108,7 +124,10 @@ namespace c_functions
             return EXIT_FAILURE;
         }
 
-        // protected function
+        /**
+         * @brief protected function
+         * 
+         */
         lua.script(R"(
             function handler(message)
                 return "Handled this message: " .. message
@@ -133,6 +152,28 @@ namespace c_functions
             std::string errwhat  = err.what();
             std::cout << errwhat << std::endl;
         }
+
+
+        /**
+         * @brief Multiple returns to and from Lua
+         * 
+         */
+        
+        lua.script(R"(
+            function mf(a, b, c)
+                return a, b, c
+            end
+        )");
+        sol::function mf = lua["mf"];
+        std::tuple<int, int, std::string> result0 = mf(1, 2, "aaa");
+
+        int t0, t1;
+        std::string t2;
+        sol::tie(t0, t1, t2) = mf(1, 2, "aaa");
+        if (t0 != std::get<0>(result0) || t1!=std::get<1>(result0) || t2!=std::get<2>(result0)) {
+            return EXIT_FAILURE;
+        }
+
 
         return EXIT_SUCCESS;
     }
