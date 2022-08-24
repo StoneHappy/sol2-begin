@@ -3,7 +3,10 @@
 #include <sol/forward.hpp>
 #include <sol/overload.hpp>
 #include <sol/protected_function_result.hpp>
+#include <sol/state.hpp>
+#include <sol/state_view.hpp>
 #include <sol/tie.hpp>
+#include <sol/types.hpp>
 #include <string>
 #include <tuple>
 #define SOL_ALL_SAFETIES_ON 1
@@ -27,6 +30,19 @@ struct my_class
 template <typename A, typename B>
 auto my_add( A a, B b ) {
         return a + b;
+}
+
+sol::object fancy_func(sol::object a, sol::object b, sol::this_state s)
+{
+    sol::state_view lua(s);
+    if (a.is<int>() && b.is<int>()) {
+        return sol::make_object(lua, a.as<int>() + b.as<int>());
+    }
+    else if (a.is<bool>()) {
+        bool do_triple = a.as<bool>();
+        return sol::make_object(lua, b.as<double>() * ( do_triple ? 3 : 1 ) );
+    }
+    return sol::make_object(lua, sol::lua_nil);
 }
 
 namespace c_functions
@@ -174,7 +190,25 @@ namespace c_functions
             return EXIT_FAILURE;
         }
 
+        /**
+         * @brief any return to and from lua
+         * 
+         */
+        lua["fancy_func"] = fancy_func;
 
+        int result1 = lua["fancy_func"](1, 2);
+        // result == 3
+        double result2 = lua["fancy_func"](false, 2.5);
+        // result2 == 2.5
+
+        // call in Lua, get result
+        lua.script("result3 = fancy_func(true, 5.5)");
+        double result3 = lua["result3"];
+        // result3 == 16.5
+        if (result1!=3 || result2!=2.5 || result3!=16.5) {
+            return EXIT_FAILURE;
+        }
+        
         return EXIT_SUCCESS;
     }
 }
